@@ -1,0 +1,37 @@
+title: Jserver Schema
+description: |
+  # jserver
+  - jserverはjsonを受け取りパースし返す
+  - go-jstmplを使って扱うjsonを柔軟に変更できる
+
+definitions:
+  id:
+    title: ID
+    description: ID
+    type: integer 
+    example: 1
+
+  message:
+    title: Meaasage
+    description: メッセージ
+    type: string
+    example: "Hello, World." 
+
+  created_at:
+    title: Created at
+    description: レコード作成日時
+    type: string
+    example: "2016-05-09T19:45:32Z"
+
+
+  json:
+    title: Json Struct 
+    description: jserverで扱う構造体
+    type: object
+    properties:
+      id:
+        $ref: '#/definitions/id'
+      message:
+        $ref: '#/definitions/message'
+      created_at:
+        $ref: '#/definitions/created_at'
