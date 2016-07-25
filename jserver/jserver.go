@@ -9,40 +9,41 @@ import (
 	"net/http"
 )
 
-type Hoge struct {
-	Valid bool
-	Int   int
+type JsonStruct struct {
+	CreatedAt string `json:"created_at"`
+	MyInt     MyInt  `json:"id"`
+	Meassage  string `json:"message"`
 }
 
-type JsonStruct struct {
-	Bar string `json:"bar"`
-	Buz string `json:"buz"`
-	Hog Hoge   `json:"hoge"`
+type MyInt struct {
+	Int   int  `json:"int"`
+	Valid bool `json:"valid"`
 }
 
 var d JsonStruct
 
-func (h Hoge) MarshalJSON() ([]byte, error) {
-	if h.Valid {
-		return json.Marshal(h.Int)
-	}
-
-	return json.Marshal([]byte(nil))
-}
-
-func (h *Hoge) UnmarshalJSON(b []byte) error {
-	var i interface{}
-	err := json.Unmarshal(b, &i)
-	if err != nil {
-		return err
-	}
-
-	h.Valid = true
-	h.Int = int(int64(i.(float64)))
-
-	return nil
-}
-
+//
+//func (h Hoge) MarshalJSON() ([]byte, error) {
+//	if h.Valid {
+//		return json.Marshal(h.Int)
+//	}
+//
+//	return json.Marshal([]byte(nil))
+//}
+//
+//func (h *Hoge) UnmarshalJSON(b []byte) error {
+//	var i interface{}
+//	err := json.Unmarshal(b, &i)
+//	if err != nil {
+//		return err
+//	}
+//
+//	h.Valid = true
+//	h.Int = int(int64(i.(float64)))
+//
+//	return nil
+//}
+//
 func get(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(d)
 	if err != nil {

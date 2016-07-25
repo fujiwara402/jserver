@@ -41,28 +41,13 @@ func main() {
 	go jserver.Start()
 
 	data1 := map[string]interface{}{
-		"bar":  "bar",
-		"buz":  "foo",
-		"hoge": 123,
+		/*range .Properties*/
+		/*range .Properties*/ "/*.Key*/": /*if eq .Type "string"*/ "/*.Example*/",/*else*/ /*.Example*/,/*end*/
+		/*end*/ /*end*/
 	}
 	fmt.Println("assert 1")
 	result1 := assert(data1)
 
-	data2 := map[string]interface{}{
-		"bar":  "bar",
-		"baz":  "hoo",
-		"hoge": 0,
-	}
-	fmt.Println("assert 2")
-	result2 := assert(data2)
 
-	data3 := map[string]interface{}{
-		"bar": "bar",
-		"buz": "foo",
-	}
-
-	fmt.Println("assert 3")
-	result3 := assert(data3)
-
-	fmt.Println("result:", result1, result2, result3)
+	fmt.Println("result:", result1)
 }

@@ -41,28 +41,18 @@ func main() {
 	go jserver.Start()
 
 	data1 := map[string]interface{}{
-		"bar":  "bar",
-		"buz":  "foo",
-		"hoge": 123,
+		
+		 "created_at":  "2016-05-09T19:45:32Z",
+		 "id":  map[int:0 valid:false],
+		 "message":  "Hello, World.",
+		 
+		 "int":  0,
+		 "valid":  false,
+		 
 	}
 	fmt.Println("assert 1")
 	result1 := assert(data1)
 
-	data2 := map[string]interface{}{
-		"bar":  "bar",
-		"baz":  "hoo",
-		"hoge": 0,
-	}
-	fmt.Println("assert 2")
-	result2 := assert(data2)
 
-	data3 := map[string]interface{}{
-		"bar": "bar",
-		"buz": "foo",
-	}
-
-	fmt.Println("assert 3")
-	result3 := assert(data3)
-
-	fmt.Println("result:", result1, result2, result3)
+	fmt.Println("result:", result1)
 }

@@ -1,18 +1,17 @@
-title: Jserver Schema
+title: Json Struct
 description: |
   # jserver
-  - jserverはjsonを受け取りパースし返す
-  - go-jstmplを使って扱うjsonを柔軟に変更できる
+  - jsonと構造体で扱う値を定義する
 
 definitions:
   id:
     title: ID
     description: ID
-    type: integer 
-    example: 1
+    type: integer
+    example: 2 
 
   message:
-    title: Meaasage
+    title: Meassage
     description: メッセージ
     type: string
     example: "Hello, World." 
@@ -23,15 +22,43 @@ definitions:
     type: string
     example: "2016-05-09T19:45:32Z"
 
+  int:
+    title: int
+    description: int
+    type: integer
+    example: 0
 
-  json:
-    title: Json Struct 
-    description: jserverで扱う構造体
+  valid:
+    title: valid
+    descrition: null許容のintでフラグとして利用する
+    type: boolean
+    example: false
+
+  my_int:
+    title: MyInt
+    description: null許容のint
+    type: object
+    properties:
+      valid:
+        $ref: '#/definitions/valid'
+      int:
+        $ref: '#/definitions/int'
+
+  json_struct:
+    title: Json Struct
+    description: jsonを扱う構造体
     type: object
     properties:
       id:
-        $ref: '#/definitions/id'
+        $ref: '#/definitions/my_int'
       message:
         $ref: '#/definitions/message'
       created_at:
         $ref: '#/definitions/created_at'
+
+properties:
+  json_struct:
+    $ref: '#/definitions/json_struct'
+  my_int:
+    $ref: '#/definitions/my_int'
+
