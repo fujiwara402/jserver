@@ -7,33 +7,49 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"log"
 )
 
-func ParseResponse(res *http.Response) (string, int) {
+func parseResponse(res *http.Response) string {
+	c, err := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
-	contents, err := ioutil.ReadAll(res.Body)
+	
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return ""
 	}
 
-	return string(contents), res.StatusCode
+	return string(c)
 }
 
 func assert(data map[string]interface{}) bool {
-	b, _ := json.Marshal(data)
+	b, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	
 	_, err := http.Post("http://localhost:4000/post", "application/json", bytes.NewReader(b))
 	if err != nil {
-		fmt.Println("Error: POST FAIL")
+		log.Println(err)
 		return false
 	}
 
-	res, _ := http.Get("http://localhost:4000/get")
-	c, _ := ParseResponse(res)
+	r, err := http.Get("http://localhost:4000/get")
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	
+	c := ParseResponse(r)
+	
 	fmt.Println("post:", string(b))
 	fmt.Println(" get:", c)
+	
 	if c == string(b) {
 		return true
 	}
+
 	return false
 }
 
@@ -45,9 +61,9 @@ func main() {
 		/*range .Properties*/ "/*.Key*/": /*if eq .Type "string"*/ "/*.Example*/",/*else*/ /*.Example*/,/*end*/
 		/*end*/ /*end*/
 	}
+	
 	fmt.Println("assert 1")
 	result1 := assert(data1)
-
 
 	fmt.Println("result:", result1)
 }
