@@ -16,10 +16,8 @@ type /*spaceToUpperCamelCase .Title*/ struct {
 }
 /*end*/
 
-
-<<<<<<< HEAD
 var d JsonStruct
-//
+
 //func (h Hoge) MarshalJSON() ([]byte, error) {
 //	if h.Valid {
 //		return json.Marshal(h.Int)
@@ -41,15 +39,12 @@ var d JsonStruct
 //	return nil
 //}
 //
-func get(w http.ResponseWriter, r *http.Request) {
-	json, err := json.Marshal(d)
-=======
+
 // 関数には適切な名前をつける。特に振る舞いが特別なものは気をつける
 func GetJSONHandler(w http.ResponseWriter, r *http.Request) {
 
 	// package名と被る命名はバグを生み出す原因なのでやめる
 	j, err := json.Marshal(d)
->>>>>>> 240413d2046f4bd535bd12c0cc280ca60274a1d8
 	if err != nil {
 		// Postに書いた通り
 		w.WriteHeader(400)
