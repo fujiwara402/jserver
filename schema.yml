@@ -45,11 +45,12 @@ definitions:
         $ref: '#/definitions/int'
 
   json_struct:
-    title: Json Struct
+    title: JSON Struct
     description: jsonを扱う構造体
     type: object
+    example: 1
     properties:
-      id:
+      my_int:
         $ref: '#/definitions/my_int'
       message:
         $ref: '#/definitions/message'

@@ -29,7 +29,7 @@ func assert(data map[string]interface{}) bool {
 		return false
 	}
 	
-	_, err := http.Post("http://localhost:4000/post", "application/json", bytes.NewReader(b))
+	_, err = http.Post("http://localhost:4000/post", "application/json", bytes.NewReader(b))
 	if err != nil {
 		log.Println(err)
 		return false
@@ -41,7 +41,7 @@ func assert(data map[string]interface{}) bool {
 		return false
 	}
 	
-	c := ParseResponse(r)
+	c := parseResponse(r)
 	
 	fmt.Println("post:", string(b))
 	fmt.Println(" get:", c)
@@ -57,9 +57,9 @@ func main() {
 	go jserver.Start()
 
 	data1 := map[string]interface{}{
-		/*range .Properties*/
-		/*range .Properties*/ "/*.Key*/": /*if eq .Type "string"*/ "/*.Example*/",/*else*/ /*.Example*/,/*end*/
-		/*end*/ /*end*/
+		/*range .JSONStruct*/
+		/ "/*.Key*/": /*if eq .Type "string"*/ "/*.Example*/",/*else*/ /*.Example*/,/*end*/
+		/*end*/
 	}
 	
 	fmt.Println("assert 1")

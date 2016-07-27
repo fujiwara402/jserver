@@ -16,7 +16,7 @@ type /*spaceToUpperCamelCase .Title*/ struct {
 }
 /*end*/
 
-var d JsonStruct
+var d JSONStruct
 
 //func (h Hoge) MarshalJSON() ([]byte, error) {
 //	if h.Valid {
@@ -63,7 +63,7 @@ func PostJSONHandler(w http.ResponseWriter, req *http.Request) {
 	// すぐ死ぬ変数は変数名を短くしておく
 	// あとちゃんとエラーを取る
 	c, err := ioutil.ReadAll(req.Body)
-	defer req.Close()
+	defer req.Body.Close()
 	if err != nil {
 		// とりあえず雑にエラーメッセージを返しておく
 		// エラーが発生して、その後の実行に影響が出ると思われるものは
