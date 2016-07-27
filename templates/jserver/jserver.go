@@ -9,7 +9,6 @@ import (
 	"net/http"
 )
 
-
 /*range .Properties*/
 type /*spaceToUpperCamelCase .Title*/ struct {
 	/*range .Properties*//*spaceToUpperCamelCase .Title*/ /*if eq .Type "object"*//*spaceToUpperCamelCase .Schema.Title*//*else*//*typeConvertToGo .Schema.Type*//*end*/ `json:"/*.Key*/"`
@@ -18,6 +17,7 @@ type /*spaceToUpperCamelCase .Title*/ struct {
 /*end*/
 
 
+<<<<<<< HEAD
 var d JsonStruct
 //
 //func (h Hoge) MarshalJSON() ([]byte, error) {
@@ -43,38 +43,71 @@ var d JsonStruct
 //
 func get(w http.ResponseWriter, r *http.Request) {
 	json, err := json.Marshal(d)
-	if err != nil {
-		fmt.Println(err)
-	}
+=======
+// 関数には適切な名前をつける。特に振る舞いが特別なものは気をつける
+func GetJSONHandler(w http.ResponseWriter, r *http.Request) {
 
+	// package名と被る命名はバグを生み出す原因なのでやめる
+	j, err := json.Marshal(d)
+>>>>>>> 240413d2046f4bd535bd12c0cc280ca60274a1d8
+	if err != nil {
+		// Postに書いた通り
+		w.WriteHeader(400)
+		log.Println(err)
+		return
+	}
+	// status codeを返す
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(json)
+	w.Write(j)
 }
 
-func post(w http.ResponseWriter, req *http.Request) {
-	d = JsonStruct{}
+// 同上
+func PostJSONHandler(w http.ResponseWriter, req *http.Request) {
 
-	content, _ := ioutil.ReadAll(req.Body)
-	str := string(content)
-	err := json.Unmarshal([]byte(str), &d)
+	// すぐ死ぬ変数は変数名を短くしておく
+	// あとちゃんとエラーを取る
+	c, err := ioutil.ReadAll(req.Body)
+	defer req.Close()
 	if err != nil {
-		fmt.Println(err)
+		// とりあえず雑にエラーメッセージを返しておく
+		// エラーが発生して、その後の実行に影響が出ると思われるものは
+		// その場で終わらせておく
+		// responseに適切に起きたエラーをstatus codeと一緒に返す
+		log.Println(err)
+		w.WriteHeader(400)
+		return
+	}
+	// []byte -> string -> []byteの型変換を行っていたのでstrを削除
+
+	// 宣言は使う前にすると読みやすい
+	d = JSONStruct{}
+	err = json.Unmarshal(c, &d)
+	if err != nil {
+		// log packageを入れているのでとりあえずfmtではなくlogを使う
+		// print debugで挿入したfmtはちゃんと消しておく
+		log.Println(err)
+		w.WriteHeader(400)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 }
 
-func Start() {
-	http.HandleFunc("/post", post)
-	http.HandleFunc("/get", get)
+// errorを返すようにする
+func Start() error {
+	http.HandleFunc("/post", PostJSONHandler)
+	http.HandleFunc("/get", GetJSONHandler)
 
 	log.Printf("Start Go HTTP Server")
 	fmt.Println("POST:http://localhost:4000/post")
 	fmt.Println(" GET:http://localhost:4000/get")
-	err := http.ListenAndServe(":4000", nil)
 
+	err := http.ListenAndServe(":4000", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
+		return err
 	}
+	return nil
 }
 
