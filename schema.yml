@@ -34,8 +34,8 @@ definitions:
     type: boolean
     example: false
 
-  my_int:
-    title: MyInt
+  null_admit_int:
+    title: NullAdmitInt 
     description: null許容のint
     type: object
     properties:
@@ -44,22 +44,22 @@ definitions:
       int:
         $ref: '#/definitions/int'
 
-  json_struct:
-    title: JSON Struct
+  sample:
+    title: Sample 
     description: jsonを扱う構造体
     type: object
     example: 1
     properties:
-      my_int:
-        $ref: '#/definitions/my_int'
+      null_admit_int:
+        $ref: '#/definitions/null_admit_int'
       message:
         $ref: '#/definitions/message'
       created_at:
         $ref: '#/definitions/created_at'
 
 properties:
-  json_struct:
-    $ref: '#/definitions/json_struct'
-  my_int:
-    $ref: '#/definitions/my_int'
+  sample:
+    $ref: '#/definitions/sample'
+  null_admit_int:
+    $ref: '#/definitions/null_admit_int'
 

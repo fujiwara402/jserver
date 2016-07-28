@@ -1,16 +1,13 @@
 package main
 
 import (
-	"os"
-
 	"./jserver"
+	"os"
 )
 
-// 終了ステータスを返すようにする
-
-func _main()int{
-	err := jserver.Start() 
-	err != nil {
+func _main() int {
+	err := jserver.Start()
+	if err != nil {
 		return 1
 	}
 	return 0

@@ -2,8 +2,17 @@ package main
 
 import (
 	"./jserver"
+	"os"
 )
 
+func _main() int {
+	err := jserver.Start()
+	if err != nil {
+		return 1
+	}
+	return 0
+}
+
 func main() {
-	jserver.Start()
+	os.Exit(_main())
 }

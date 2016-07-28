@@ -1,12 +1,13 @@
 package jserver
 
 import (
-	//"bytes"
+	_ "bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"github.com/pkg/errors"
 )
 
 /*range .Properties*/
@@ -16,83 +17,132 @@ type /*spaceToUpperCamelCase .Title*/ struct {
 }
 /*end*/
 
-var d JSONStruct
+var ( 
+	Status = Sample{}
+)
 
-//func (h Hoge) MarshalJSON() ([]byte, error) {
-//	if h.Valid {
-//		return json.Marshal(h.Int)
-//	}
-//
-//	return json.Marshal([]byte(nil))
-//}
-//
-//func (h *Hoge) UnmarshalJSON(b []byte) error {
-//	var i interface{}
-//	err := json.Unmarshal(b, &i)
-//	if err != nil {
-//		return err
-//	}
-//
-//	h.Valid = true
-//	h.Int = int(int64(i.(float64)))
-//
-//	return nil
-//}
-//
-
-// 関数には適切な名前をつける。特に振る舞いが特別なものは気をつける
-func GetJSONHandler(w http.ResponseWriter, r *http.Request) {
-
-	// package名と被る命名はバグを生み出す原因なのでやめる
-	j, err := json.Marshal(d)
-	if err != nil {
-		// Postに書いた通り
-		w.WriteHeader(400)
-		log.Println(err)
-		return
-	}
-	// status codeを返す
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(j)
+func NewSample() *Sample{
+	return &Sample{}
 }
 
-// 同上
-func PostJSONHandler(w http.ResponseWriter, req *http.Request) {
+func (h NullAdmitInt) MarshalJSON() ([]byte, error) {
+	if h.Valid {
+		return json.Marshal(h.Int)
+	}
 
-	// すぐ死ぬ変数は変数名を短くしておく
-	// あとちゃんとエラーを取る
+	return json.Marshal([]byte(nil))
+}
+
+func (h *NullAdmitInt) UnmarshalJSON(b []byte) error {
+	var i interface{}
+	err := json.Unmarshal(b, &i)
+	if err != nil {
+		return err
+	}
+
+	h.Valid = true
+	h.Int = int(int64(i.(float64)))
+
+	return nil
+}
+
+func (s *Sample) FromJSON(b []byte) error {
+	err := json.Unmarshal(b, s)
+	if err != nil {
+		return err
+	}
+
+	err = s.ValidateFromJSON()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Sample) ToJSON() ([]byte, error) {
+	b, err := json.Marshal(s)
+	if err != nil {
+		return nil, err
+	}
+	err = s.ValidateToJSON()
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+func (s *Sample) SaveStatus() error {
+	Status = *s
+	return nil
+}
+
+func (s *Sample) ValidateFromJSON() error {
+	return nil
+}
+
+func (s *Sample) ValidateToJSON() error {
+	return nil
+}
+
+func GetSampleHandler(w http.ResponseWriter, r *http.Request) {
+	j, err := Status.ToJSON() 
+	if err != nil {
+		Failed(&w,errors.Wrap(err,"Decoding Error"))
+		return
+	}
+
+	Success(&w, j)
+	return
+}
+
+func PostSampleHandler(w http.ResponseWriter, req *http.Request) {
 	c, err := ioutil.ReadAll(req.Body)
 	defer req.Body.Close()
 	if err != nil {
-		// とりあえず雑にエラーメッセージを返しておく
-		// エラーが発生して、その後の実行に影響が出ると思われるものは
-		// その場で終わらせておく
-		// responseに適切に起きたエラーをstatus codeと一緒に返す
-		log.Println(err)
-		w.WriteHeader(400)
+		Failed(&w,errors.Wrap(err, "Request Error"))
 		return
 	}
-	// []byte -> string -> []byteの型変換を行っていたのでstrを削除
 
-	// 宣言は使う前にすると読みやすい
-	d = JSONStruct{}
-	err = json.Unmarshal(c, &d)
+	s := NewSample()
+	err = s.FromJSON(c) 
 	if err != nil {
-		// log packageを入れているのでとりあえずfmtではなくlogを使う
-		// print debugで挿入したfmtはちゃんと消しておく
-		log.Println(err)
-		w.WriteHeader(400)
+		Failed(&w,errors.Wrap(err, "Decoding Error"))
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	err = s.SaveStatus()
+	if err != nil {
+		Failed(&w,errors.Wrap(err, "Save Sample Error"))
+	}
+	
+	Success(&w, nil)
+	return
 }
 
-// errorを返すようにする
+func Success(w *http.ResponseWriter, b []byte) {
+	(*w).WriteHeader(200)
+	(*w).Header().Set("Content-Type", "application/json")
+	_, err := (*w).Write(b)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func Failed(w *http.ResponseWriter, e error) {
+	(*w).WriteHeader(400)
+	_, err := (*w).Write([]byte(e.Error()))
+	if err != nil {
+		return
+	}
+	return
+}
+
 func Start() error {
-	http.HandleFunc("/post", PostJSONHandler)
-	http.HandleFunc("/get", GetJSONHandler)
+	http.HandleFunc("/post", PostSampleHandler)
+	http.HandleFunc("/get", GetSampleHandler)
 
 	log.Printf("Start Go HTTP Server")
 	fmt.Println("POST:http://localhost:4000/post")
